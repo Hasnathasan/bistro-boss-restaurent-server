@@ -28,6 +28,25 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const menuCollection = client.db("bistro-boss").collection("menu");
+    const reviewCollection = client.db("bistro-boss").collection("reviews");
+
+
+
+    app.get('/menu', async(req, res) => {
+        const result = await menuCollection.find().toArray();
+        res.send(result)
+    })
+
+
+    app.get('/reviews', async(req, res) => {
+        const result = await reviewCollection.find().toArray();
+        res.send(result)
+    })
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
