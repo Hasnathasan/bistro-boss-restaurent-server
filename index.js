@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 const cors = require('cors');
 require("dotenv").config();
@@ -53,6 +53,27 @@ async function run() {
         return res.send({error: true, message: "User already added in Collection"})
       }
       const result = await usersCollection.insertOne(user);
+      res.send(result)
+    })
+
+    app.delete('/users/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id)};
+      const result = await usersCollection.deleteOne(filter);
+      res.send(result)
+    })
+
+    app.patch('/users/admin/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      console.log(id);
+      const updateDoc = {
+        $set: {
+          isAdmin: true
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc)
       res.send(result)
     })
 
