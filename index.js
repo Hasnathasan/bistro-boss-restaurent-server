@@ -29,6 +29,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const usersCollection = client.db("bistro-boss").collection("users");
     const menuCollection = client.db("bistro-boss").collection("menu");
     const reviewCollection = client.db("bistro-boss").collection("reviews");
     const cartCollection = client.db("bistro-boss").collection("carts");
@@ -40,6 +41,17 @@ async function run() {
         res.send(result)
     })
 
+
+    app.post("/users", async(req, res) => {
+      const user = req.body;
+      const query = {email: user.email}
+      const existist = await usersCollection.findOne(query);
+      if(existist){
+        return res.send({error: true, message: "User already added in Collection"})
+      }
+      const result = await usersCollection.insertOne(user);
+      res.send(result)
+    })
 
     app.get('/reviews', async(req, res) => {
         const result = await reviewCollection.find().toArray();
