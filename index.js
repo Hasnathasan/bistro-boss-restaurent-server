@@ -73,25 +73,7 @@ async function run() {
     })
 
     
-    app.get('/users', verifyJWT, async(req, res) => {
-      const email = req.query.email;
-      console.log(req.decoded);
-      if(email !== req.decoded.email){
-        return res.send({error: true, message: "unathorized user"})
-      }
-      const result = await usersCollection.find().toArray();
-      res.send(result)
-    })
-    app.post("/users", async(req, res) => {
-      const user = req.body;
-      const query = {email: user.email}
-      const existist = await usersCollection.findOne(query);
-      if(existist){
-        return res.send({error: true, message: "User already added in Collection"})
-      }
-      const result = await usersCollection.insertOne(user);
-      res.send(result)
-    })
+    
 
     app.delete('/users/:id', async(req, res) => {
       const id = req.params.id;
