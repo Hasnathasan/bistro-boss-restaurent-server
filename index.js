@@ -11,6 +11,7 @@ app.use(cors())
 app.use(express.json())
 const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization;
+  console.log(authorization);
   if(!authorization){
     return res.status(401).send({error: true, message: "unthorized user"})
   }
@@ -60,9 +61,24 @@ async function run() {
       const token = jwt.sign(user, process.env.JWT_ACCESSTOKEN, { expiresIn: '1h' });
       res.send({token})
     })
+    app.get('/isadmin/:email', async(req, res) => {
+      const email = req.params.email;
+      const query = {email: email};
+      const user = await usersCollection.findOne(query);
+      if(user?.isAdmin !== "admin"){
+        return res.send({isAdmin: false})
+      }
+      const isAdmin = user?.isAdmin === "admin";
+      res.send({isAdmin})
+    })
 
-    app.get('/users', async(req, res) => {
-      
+    
+    app.get('/users', verifyJWT, async(req, res) => {
+      const email = req.query.email;
+      console.log(req.decoded);
+      if(email !== req.decoded.email){
+        return res.send({error: true, message: "unathorized user"})
+      }
       const result = await usersCollection.find().toArray();
       res.send(result)
     })
